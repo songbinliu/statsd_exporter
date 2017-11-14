@@ -36,7 +36,7 @@ var (
 	metricsEndpoint     = flag.String("web.telemetry-path", "/metrics", "Path under which to expose metrics.")
 	statsdListenAddress = flag.String("statsd.listen-address", "", "The UDP address on which to receive statsd metric lines. DEPRECATED, use statsd.listen-udp instead.")
 	statsdListenUDP     = flag.String("statsd.listen-udp", ":9125", "The UDP address on which to receive statsd metric lines. \"\" disables it.")
-	statsdListenTCP     = flag.String("statsd.listen-tcp", ":9125", "The TCP address on which to receive statsd metric lines. \"\" disables it.")
+	statsdListenTCP     = flag.String("statsd.listen-tcp", "", "The TCP address on which to receive statsd metric lines. \"\" disables it.")
 	mappingConfig       = flag.String("statsd.mapping-config", "", "Metric mapping configuration file name.")
 	readBuffer          = flag.Int("statsd.read-buffer", 0, "Size (in bytes) of the operating system's transmit read buffer associated with the UDP connection. Please make sure the kernel parameters net.core.rmem_max is set to a value greater than the value specified.")
 	showVersion         = flag.Bool("version", false, "Print version information.")
@@ -148,7 +148,7 @@ func main() {
 
 	log.Infoln("Starting StatsD -> Prometheus Exporter", version.Info())
 	log.Infoln("Build context", version.BuildContext())
-	log.Infof("Accepting StatsD Traffic: UDP %v, TCP %v", *statsdListenUDP, *statsdListenTCP)
+	log.Infof("Accepting StatsD Traffic: UDP [%v], TCP [%v]", *statsdListenUDP, *statsdListenTCP)
 	log.Infoln("Accepting Prometheus Requests on", *listenAddress)
 
 	go serveHTTP()
@@ -188,6 +188,7 @@ func main() {
 
 	mapper := &metricMapper{}
 	if *mappingConfig != "" {
+		log.Infof("mapping.config=%v", *mappingConfig)
 		err := mapper.initFromFile(*mappingConfig)
 		if err != nil {
 			log.Fatal("Error loading config:", err)

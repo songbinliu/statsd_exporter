@@ -43,6 +43,10 @@ build: promu
 	@echo ">> building binaries"
 	@$(PROMU) build --prefix $(PREFIX)
 
+product:
+	@echo ">> building production binaries"
+	env GOOS=linux GOARCH=amd64 go build -o statsd_exporter.linux . 
+
 tarball: promu
 	@echo ">> building release tarball"
 	@$(PROMU) tarball --prefix $(PREFIX) $(BIN_DIR)

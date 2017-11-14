@@ -527,11 +527,16 @@ type StatsDUDPListener struct {
 
 func (l *StatsDUDPListener) Listen(e chan<- Events) {
 	buf := make([]byte, 65535)
+	count := 0
 	for {
 		n, _, err := l.conn.ReadFromUDP(buf)
 		if err != nil {
 			log.Fatal(err)
 		}
+		if count % 1000 == 0 {
+			log.Infof("Get a message[%d]", count)
+		}
+		count ++
 		l.handlePacket(buf[0:n], e)
 	}
 }
