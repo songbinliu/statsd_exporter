@@ -41,6 +41,7 @@ var (
 	readBuffer          = flag.Int("statsd.read-buffer", 0, "Size (in bytes) of the operating system's transmit read buffer associated with the UDP connection. Please make sure the kernel parameters net.core.rmem_max is set to a value greater than the value specified.")
 	showVersion         = flag.Bool("version", false, "Print version information.")
 	doDebug             = flag.Bool("debug", false, "debug mode: will print counter when receiving metrics.")
+	intervalInfo        = flag.Int("interval", 100, "debug mode: how often to print out the received metrics.")
 )
 
 func serveHTTP() {
@@ -173,7 +174,11 @@ func main() {
 
 		ul := &StatsDUDPListener{conn: uconn}
 		if *doDebug {
-			go ul.ListenDebug(events)
+			if *intervalInfo < 1 {
+				*intervalInfo = 1
+			}
+			log.Infof("Debug mode, interval = %d", *intervalInfo)
+			go ul.ListenDebug(events, *intervalInfo)
 		} else {
 			go ul.Listen(events)
 		}

@@ -541,7 +541,7 @@ func (l *StatsDUDPListener) Listen(e chan<- Events) {
 	}
 }
 
-func (l *StatsDUDPListener) ListenDebug(e chan<- Events) {
+func (l *StatsDUDPListener) ListenDebug(e chan<- Events, interval int) {
 	buf := make([]byte, 65535)
 	count := 0
 	for {
@@ -549,7 +549,7 @@ func (l *StatsDUDPListener) ListenDebug(e chan<- Events) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if count%100 == 0 {
+		if count % interval == 0 {
 			log.Infof("Get a message[%d]", count)
 		}
 		count++
